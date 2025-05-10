@@ -1,0 +1,237 @@
+<p class="mat-headline-small text-center my-6">
+  <b class="font-medium">Configurações</b>
+</p>
+
+@if (form) {
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-accordion>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Foto de perfil</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="flex flex-col gap-6">
+          <div class="flex flex-col items-center gap-4">
+            <div class="w-32 h-32 rounded-full flex items-center justify-center">
+              @if (form.controls.picture.value) {
+                <img [src]="form.controls.picture.value | safeUrl" class="w-full h-full rounded-full object-cover" />
+              } @else {
+                <mat-icon class="pic-icon">image</mat-icon>
+              }
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              (change)="onFileSelected($event)"
+              class="hidden"
+              #fileInput
+            />
+            <button mat-stroked-button (click)="fileInput.click()">
+              <mat-icon>upload</mat-icon>
+              Selecionar foto
+            </button>
+          </div>
+          <div class="flex justify-end gap-2">
+            <button mat-button type="button" (click)="resetPanel(['picture'])">Cancelar</button>
+            <button mat-flat-button type="submit" [disabled]="shouldDisable(['picture'])">Salvar alteração</button>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Número de CRP</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="flex flex-col gap-6">
+          <mat-form-field>
+            <mat-label>CRP</mat-label>
+            <input matInput formControlName="crpId" />
+            @if (form.controls.crpId.invalid) {
+              <mat-error>CRP é obrigatório</mat-error>
+            }
+          </mat-form-field>
+          <div class="flex justify-end gap-2">
+            <button mat-button type="button" (click)="resetPanel(['crpId'])">Cancelar</button>
+            <button mat-flat-button type="submit" [disabled]="shouldDisable(['crpId'])">Salvar alteração</button>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Nome</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="flex flex-col gap-6">
+          <mat-form-field>
+            <mat-label>Nome completo</mat-label>
+            <input matInput formControlName="name" />
+            @if (form.controls.name.invalid) {
+              <mat-error>Nome é obrigatório</mat-error>
+            }
+          </mat-form-field>
+          <div class="flex justify-end gap-2">
+            <button mat-button type="button" (click)="resetPanel(['name'])">Cancelar</button>
+            <button mat-flat-button type="submit" [disabled]="shouldDisable(['name'])">Salvar alteração</button>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Localização</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="flex flex-col gap-6">
+          <mat-form-field>
+            <mat-label>Endereço</mat-label>
+            <input matInput formControlName="address" />
+            @if (form.controls.address.invalid) {
+              <mat-error>Endereço é obrigatório</mat-error>
+            }
+          </mat-form-field>
+          <div class="flex justify-end gap-2">
+            <button mat-button type="button" (click)="resetPanel(['address'])">Cancelar</button>
+            <button mat-flat-button type="submit" [disabled]="shouldDisable(['address'])">Salvar alteração</button>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Abordagem</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="flex flex-col gap-6">
+          <mat-form-field>
+            <mat-label>Abordagem terapêutica</mat-label>
+            <input matInput formControlName="psycologicalSpecialty" />
+            @if (form.controls.psycologicalSpecialty.invalid) {
+              <mat-error>Especialidade é obrigatória</mat-error>
+            }
+          </mat-form-field>
+          <div class="flex justify-end gap-2">
+            <button mat-button type="button" (click)="resetPanel(['psycologicalSpecialty'])">Cancelar</button>
+            <button mat-flat-button type="submit" [disabled]="shouldDisable(['psycologicalSpecialty'])">Salvar alteração</button>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Contato</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="flex flex-col gap-6">
+          <mat-form-field>
+            <mat-label>Telefone</mat-label>
+            <input matInput formControlName="phone" />
+            @if (form.controls.phone.invalid) {
+              <mat-error>Telefone é obrigatório</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>URL do Instagram</mat-label>
+            <input matInput formControlName="instagramAddress" />
+          </mat-form-field>
+          <div class="flex justify-end gap-2">
+            <button mat-button type="button" (click)="resetPanel(['phone', 'instagramAddress'])">Cancelar</button>
+            <button mat-flat-button type="submit" [disabled]="shouldDisable(['phone', 'instagramAddress'])">Salvar alteração</button>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Público atentido</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="flex flex-col gap-6">
+          <mat-form-field>
+            <mat-label>Público alvo</mat-label>
+            <input matInput formControlName="targetAudience" />
+            @if (form.controls.targetAudience.invalid) {
+              <mat-error>Público alvo é obrigatório</mat-error>
+            }
+          </mat-form-field>
+          <div class="flex justify-end gap-2">
+            <button mat-button type="button" (click)="resetPanel(['targetAudience'])">Cancelar</button>
+            <button mat-flat-button type="submit" [disabled]="shouldDisable(['targetAudience'])">Salvar alteração</button>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Modelo de atendimento</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="flex flex-col gap-6">
+          <mat-form-field>
+            <mat-label>Modalidade de serviço</mat-label>
+            <mat-select formControlName="serviceModality" multiple>
+              <mat-option value="Individual">Individual</mat-option>
+              <mat-option value="Casal">Casal</mat-option>
+              <mat-option value="Grupo">Grupo</mat-option>
+            </mat-select>
+            @if (form.controls.serviceModality.invalid) {
+              <mat-error>Modalidade é obrigatória</mat-error>
+            }
+          </mat-form-field>
+          <div class="flex justify-end gap-2">
+            <button mat-button type="button" (click)="resetPanel(['serviceModality'])">Cancelar</button>
+            <button mat-flat-button type="submit" [disabled]="shouldDisable(['serviceModality'])">Salvar alteração</button>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Método de pagamento</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="flex flex-col gap-6">
+          <mat-form-field>
+            <mat-label>Método de pagamento</mat-label>
+            <mat-select formControlName="paymentMethod" multiple>
+              <mat-option value="Espécie">Espécie</mat-option>
+              <mat-option value="Cartão de crédito">Cartão de crédito</mat-option>
+              <mat-option value="PIX">PIX</mat-option>
+              <mat-option value="Convênios">Convênios</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <div class="flex justify-end gap-2">
+            <button mat-button type="button" (click)="resetPanel(['paymentMethod'])">Cancelar</button>
+            <button mat-flat-button type="submit" [disabled]="shouldDisable(['paymentMethod'])">Salvar alteração</button>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Convênios</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="flex flex-col gap-6">
+          <mat-form-field>
+            <mat-label>Convênios aceitos</mat-label>
+            <input matInput formControlName="acceptedInsurances" />
+          </mat-form-field>
+          <div class="flex justify-end gap-2">
+            <button mat-button type="button" (click)="resetPanel(['acceptedInsurances'])">Cancelar</button>
+            <button mat-flat-button type="submit" [disabled]="shouldDisable(['acceptedInsurances'])">Salvar alteração</button>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </form>
+} @else {
+  <div class="flex flex-col justify-center gap-6 items-center h-full">
+    <mat-spinner></mat-spinner>
+    <p class="mat-body-large">Carregando seus dados...</p>
+    <button mat-flat-button (click)="fillSampleData()">
+      Preencher com dados do usuário
+    </button>
+  </div>
+}

@@ -1,0 +1,244 @@
+<div class="absolute top-0 left-0 w-full">
+  @if (!logged()) {
+    <h6 class="mat-headline-small text-center mt-6">
+      <b class="font-medium">Cadastro</b>
+    </h6>
+
+    <p class="mat-title-medium text-center mt-18 px-6">
+      Psicólogo, crie a sua conta para poder compartilhar o seu cartão de
+      visitas com o mundo.
+    </p>
+
+    <div class="flex flex-col items-center gap-4 mt-12">
+      <button mat-stroked-button type="button" (click)="logged.set(true)">
+        <mat-icon svgIcon="google" />
+        Fazer cadastro através do Google
+      </button>
+    </div>
+  } @else if (!created()) {
+    <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+      <mat-stepper #stepper labelPosition="bottom" linear>
+        <mat-step [stepControl]="professionalDataForm">
+          <h6 class="mat-headline-small text-center">
+            <b class="font-medium">Dados pessoais</b>
+          </h6>
+
+          <p class="mat-title-medium text-center mt-3">
+            As informações fornecidas estarão visíveis ao público. Você poderá
+            editá-las sempre que quiser.
+          </p>
+          <div class="flex flex-col gap-2 mt-8">
+            <mat-form-field>
+              <mat-label>Número do CRP</mat-label>
+              <input
+                matInput
+                placeholder="Digite o número do seu CRP"
+                [formControl]="crpId" />
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Nome</mat-label>
+              <input
+                matInput
+                placeholder="Digite seu nome"
+                [formControl]="name" />
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Endereço</mat-label>
+              <input
+                matInput
+                placeholder="Digite seu estado e cidade"
+                [formControl]="address" />
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Abordagem psicológica</mat-label>
+              <input
+                matInput
+                placeholder="Digite sua abordagem terapêutica"
+                [formControl]="psycologicalSpecialty" />
+            </mat-form-field>
+            <div class="flex justify-center">
+              <button
+                mat-flat-button
+                matStepperNext
+                type="button"
+                [disabled]="!professionalDataForm.valid">
+                Avançar
+              </button>
+            </div>
+          </div>
+        </mat-step>
+        <mat-step [stepControl]="contactDataForm">
+          <h6 class="mat-headline-small text-center">
+            <b class="font-medium">Meios de contato</b>
+          </h6>
+
+          <p class="mat-title-medium text-center mt-3">
+            As informações fornecidas estarão visíveis ao público. Você poderá
+            editá-las sempre que quiser.
+          </p>
+
+          <div class="flex flex-col gap-2 mt-8">
+            <mat-form-field>
+              <mat-label>Número de contato</mat-label>
+              <input
+                matInput
+                placeholder="Digite seu número de contato"
+                [formControl]="phone" />
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Instagram</mat-label>
+              <input
+                matInput
+                placeholder="Digite seu @ do Instagram"
+                [formControl]="instagramAddress" />
+            </mat-form-field>
+
+            <div class="flex justify-center gap-2">
+              <button mat-stroked-button matStepperPrevious type="button">
+                Voltar
+              </button>
+              <button
+                mat-flat-button
+                matStepperNext
+                type="button"
+                [disabled]="!contactDataForm.valid">
+                Avançar
+              </button>
+            </div>
+          </div>
+        </mat-step>
+        <mat-step [stepControl]="contactDataForm">
+          <h6 class="mat-headline-small text-center">
+            <b class="font-medium">Atendimento</b>
+          </h6>
+
+          <p class="mat-title-medium text-center mt-3">
+            As informações fornecidas estarão visíveis ao público. Você poderá
+            editá-las sempre que quiser.
+          </p>
+
+          <div class="flex flex-col gap-2 mt-8">
+            <mat-form-field>
+              <mat-label>Público atendido</mat-label>
+              <input
+                matInput
+                placeholder="Digite seu público atendido"
+                [formControl]="targetAudience" />
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Modelo de atendimento</mat-label>
+              <mat-select [formControl]="serviceModality" multiple>
+                <mat-option value="Individual">Individual</mat-option>
+                <mat-option value="Casal">Casal</mat-option>
+                <mat-option value="Grupo">Grupo</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Método de pagamento</mat-label>
+              <mat-select [formControl]="paymentMethod" multiple>
+                <mat-option value="Espécie">Espécie</mat-option>
+                <mat-option value="Cartão de crédito">Cartão de crédito</mat-option>
+                <mat-option value="PIX">PIX</mat-option>
+                <mat-option value="Convênios">Convênios</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Convênios</mat-label>
+              <input
+                matInput
+                placeholder="Digite os convênios aceitados"
+                [formControl]="acceptedInsurances" />
+            </mat-form-field>
+
+            <div class="flex justify-center gap-2">
+              <button mat-stroked-button matStepperPrevious type="button">
+                Voltar
+              </button>
+              <button
+                mat-flat-button
+                matStepperNext
+                type="button"
+                [disabled]="!contactDataForm.valid">
+                Avançar
+              </button>
+            </div>
+          </div>
+        </mat-step>
+        <mat-step [stepControl]="pictureForm">
+          <h6 class="mat-headline-small text-center">
+            <b class="font-medium">Foto de perfil</b>
+          </h6>
+
+          <p class="mat-title-medium text-center mt-3">
+            A imagem compartilhada será exibida no seu cartão de visita. Você
+            poderá alterá-la sempre que quiser.
+          </p>
+
+          <div class="mt-8">
+            @if (!imagePreviewUrl) {
+              <div
+                class="flex flex-col items-center justify-center gap-4 bg-[var(--mat-sys-surface-container-high)] rounded-[.25rem]"
+                style="aspect-ratio: 10 / 7"
+                (click)="pictureInput.click()">
+                <mat-icon class="add-a-photo">add_a_photo</mat-icon>
+                <p class="mat-body-medium">Selecione a sua foto de perfil</p>
+              </div>
+            } @else {
+              <img
+                [src]="imagePreviewUrl"
+                alt="Pré-visualização da foto de perfil"
+                class="object-cover rounded-[.25rem] w-full h-full"
+                style="aspect-ratio: 10 / 7; cursor: pointer"
+                (click)="pictureInput.click()" />
+            }
+            <input
+              #pictureInput
+              class="hidden"
+              [formControl]="picture"
+              type="file"
+              accept=".png, .jpg, .jpeg, image/png, image/jpeg"
+              (change)="onPictureSelected($event)" />
+
+            <div class="flex justify-center gap-2 mt-6">
+              <button mat-stroked-button matStepperPrevious type="button">
+                Voltar
+              </button>
+              <button
+                mat-flat-button
+                type="submit"
+                [disabled]="!registrationForm.valid">
+                Criar conta
+              </button>
+            </div>
+          </div>
+        </mat-step>
+      </mat-stepper>
+    </form>
+  }
+
+  @if (created()) {
+    <h6 class="mat-headline-small text-center mt-6">
+      <b class="font-medium">Conta criada com sucesso!</b>
+    </h6>
+
+    <p class="mat-title-medium text-center mt-8 px-6">
+      Abaixo está o seu cartão de visitas. Você pode alterar as informações na
+      aba de configurações sempre que desejar.
+    </p>
+
+    <div class="px-6">
+      <app-professional-card class="mt-12" />
+    </div>
+
+    <div class="flex justify-center mt-10">
+      <a mat-flat-button routerLink="/">Ir para página inicial</a>
+    </div>
+  }
+</div>

@@ -1,0 +1,83 @@
+:host {
+  position: relative;
+  background-color: var(--mat-sys-surface-container-high);
+  padding: 0.25rem;
+  border-radius: 1.75rem;
+  min-width: 22.5rem;
+  width: 100%;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  .input-container {
+    flex: 1;
+    padding-left: 0.75rem;
+  }
+
+  .input-container input {
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    outline: none;
+    font: var(--mat-sys-body-large);
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  .search-bar-prefix-container:empty,
+  .search-bar-suffix-container:empty {
+    display: none;
+  }
+
+  .search-bar-prefix-container:not(:empty),
+  .search-bar-suffix-container:not(:empty) {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+  }
+
+  [searchBarPrefix] mat-icon,
+  [searchBarSuffix] mat-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &.disabled {
+    background-color: color-mix(
+      in srgb,
+      var(--mat-sys-on-surface) 4%,
+      transparent
+    );
+
+    .input-container input {
+      color: color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent);
+    }
+
+    [searchBarPrefix],
+    [searchBarSuffix] {
+      color: color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent);
+    }
+  }
+
+  .search-bar-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1;
+    width: 100%;
+    background-color: var(--mat-sys-surface-container-high);
+    border-radius: 0 0 1.75rem 1.75rem;
+
+    &:has(search-bar-item) {
+      border-top: 1px solid var(--mat-sys-outline);
+    }
+  }
+
+  &:has(search-bar-item) {
+    border-radius: 1.75rem 1.75rem 0 0;
+  }
+}

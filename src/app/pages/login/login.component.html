@@ -1,0 +1,24 @@
+<h6 class="mat-headline-small text-center mt-6">
+  <b class="font-medium">Entrar na conta</b>
+</h6>
+
+<p class="mat-title-large text-center mt-18">
+  Psicólogo, acesse a sua conta para poder gerenciar os seus dados.
+</p>
+
+<div class="flex flex-col items-center gap-8 mt-12" (ngSubmit)="onSubmit()">
+  <div>
+    <button mat-stroked-button type="button">
+      <mat-icon svgIcon="google" />
+      Acessar conta com Google
+    </button>
+  </div>
+  <div class="flex flex-col gap-2">
+    <!-- <p class="mat-title-medium">
+      Esqueceu sua senha? <a [routerLink]="['/recovery']">Clique aqui</a>
+    </p> -->
+    <p class="mat-title-medium">
+      Não tem uma conta? <a [routerLink]="['/register']">Clique aqui</a>
+    </p>
+  </div>
+</div>

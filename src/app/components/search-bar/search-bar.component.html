@@ -1,0 +1,21 @@
+<div class="search-bar-prefix-container">
+  <ng-content select="[searchBarPrefix]" />
+</div>
+<div class="input-container">
+  <input
+    #input
+    type="text"
+    [placeholder]="placeholder()"
+    [disabled]="disabled()"
+    (change)="_onChange($event)"
+    (blur)="_onBlur()"
+    (focus)="_onFocus()"
+    (keyup)="_onChange($event)"
+  />
+</div>
+<div class="search-bar-suffix-container">
+  <ng-content select="[searchBarSuffix]" />
+</div>
+<div class="search-bar-dropdown">
+  <ng-content select="search-bar-item" />
+</div>

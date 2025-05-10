@@ -1,0 +1,24 @@
+<div class="flex justify-center py-4">
+  <search-bar
+    #searchBar
+    placeholder="Pesquisar"
+    (focused)="onFocused()"
+    (blurred)="onBlurred()"
+    (valueChanged)="onValueChanged($event)">
+    <mat-icon searchBarSuffix>search</mat-icon>
+    @for (result of searchResults(); track result) {
+      <search-bar-item (click)="onItemClicked(result)">{{
+        result
+      }}</search-bar-item>
+    }
+  </search-bar>
+</div>
+
+<h6 class="mat-headline-small mt-4 mb-8 text-center">
+  <b class="font-medium">Psicólogos cadastrados</b>
+</h6>
+<div class="flex flex-col items-center gap-6">
+  <app-professional-card />
+  <app-professional-card />
+  <app-professional-card />
+</div>
