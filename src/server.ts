@@ -7,11 +7,21 @@ import {
 import express from 'express';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { v2 as cloudinary } from 'cloudinary';
+import multer from 'multer';
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
 
+// Inicialize Cloudinary
+cloudinary.config({ 
+  cloud_name: process.env['CLOUD_NAME']!, 
+  api_key: process.env['CLOUD_API_KEY']!, 
+  api_secret: process.env['CLOUD_API_SECRET']! 
+});
+
 const app = express();
+const upload = multer({ storage: multer.memoryStorage() });
 const angularApp = new AngularNodeAppEngine();
 
 /**
@@ -25,6 +35,27 @@ const angularApp = new AngularNodeAppEngine();
  * });
  * ```
  */
+
+// Endpoint de upload
+app.post('/api/upload', upload.single('file') as any, async (req, res) => {
+  try {
+    const buffer = req.file!.buffer;
+    // Envia via stream para Cloudinary
+    const streamUpload = (buf: Buffer) => {
+      return new Promise<any>((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { resource_type: 'auto' },
+          (error, result) => error ? reject(error) : resolve(result)
+        );
+        stream.end(buf);
+      });
+    };
+    const result = await streamUpload(buffer);
+    return res.json({ url: result.secure_url });
+  } catch (err) {
+    return res.status(500).json({ error: (err as any).message });
+  }
+});
 
 /**
  * Serve static files from /browser

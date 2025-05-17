@@ -1,3 +1,4 @@
+@let user = userData();
 <mat-sidenav-container class="h-screen">
   <mat-sidenav-content>
     <mat-toolbar>
@@ -10,7 +11,7 @@
       <span class="flex-grow"></span>
       <h1>Psicoquadro</h1>
       <span class="flex-grow"></span>
-      <button mat-icon-button aria-label="account icon" routerLink="/login">
+      <button mat-icon-button aria-label="account icon" routerLink="/login" [disabled]="!!user">
         <mat-icon>account_circle</mat-icon>
       </button>
     </mat-toolbar>
@@ -25,21 +26,24 @@
       <a mat-list-item routerLink="/" [activated]="isRouteActive('/')">
         <mat-icon matListItemIcon>home</mat-icon>
         Início</a>
-      <a mat-list-item routerLink="/login" [activated]="isRouteActive('/login')">
-        <mat-icon matListItemIcon>login</mat-icon>
-        Entrar
-      </a>
-      <a mat-list-item routerLink="/">
-        <mat-icon matListItemIcon>logout</mat-icon>
-        Sair da conta
-      </a>
-      <a mat-list-item routerLink="/register" [activated]="isRouteActive('/register')">
-        <mat-icon matListItemIcon>person_add</mat-icon>
-        Criar conta
-      </a>
-      <a mat-list-item routerLink="/config" [activated]="isRouteActive('/config')">
-        <mat-icon matListItemIcon>settings</mat-icon>
-        Configurações</a>
+      @if (!user) {
+        <a mat-list-item routerLink="/login" [activated]="isRouteActive('/login')">
+          <mat-icon matListItemIcon>login</mat-icon>
+          Entrar
+        </a>
+        <a mat-list-item routerLink="/register" [activated]="isRouteActive('/register')">
+          <mat-icon matListItemIcon>person_add</mat-icon>
+          Criar conta
+        </a>
+      } @else {
+        <a mat-list-item (click)="userService.logoutWithGoogle()">
+          <mat-icon matListItemIcon>logout</mat-icon>
+          Sair da conta
+        </a>
+        <a mat-list-item routerLink="/config" [activated]="isRouteActive('/config')">
+          <mat-icon matListItemIcon>settings</mat-icon>
+          Configurações</a>
+      }
     </mat-nav-list>
   </mat-sidenav>
 </mat-sidenav-container>

@@ -8,8 +8,9 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 export class SafeUrlPipe implements PipeTransform {
   constructor(private sanitizer: DomSanitizer) {}
 
-  transform(file: File | null): SafeUrl {
+  transform(file: File | string | null): SafeUrl {
     if (!file) return '';
-    return this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file));
+    const url = typeof file === 'string' ? file : URL.createObjectURL(file);
+    return this.sanitizer.bypassSecurityTrustUrl(url);
   }
 } 

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,26 +7,18 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { SafeUrlPipe } from './safe-url.pipe';
 import { MatSelectModule } from '@angular/material/select';
-
-export type UserData = {
-  crpId: string;
-  name: string;
-  address: string;
-  psycologicalSpecialty: string;
-  phone: string;
-  instagramAddress: string;
-  targetAudience: string;
-  serviceModality: string[];
-  paymentMethod: string[];
-  acceptedInsurances: string;
-  picture: File | null;
-};
+import {
+  UserService,
+  UserPublicData,
+  UserFormData,
+} from '../../services/auth.service';
+import { Router, RouterLink } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 type FormData = {
-  [K in keyof UserData]: FormControl<UserData[K]>;
+  [K in keyof UserPublicData]: FormControl<UserPublicData[K]>;
 };
 
 @Component({
@@ -37,21 +29,29 @@ type FormData = {
     MatButtonModule,
     MatExpansionModule,
     MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
     MatSelectModule,
     ReactiveFormsModule,
-    MatIconModule,
+    RouterLink,
     SafeUrlPipe,
   ],
 })
 export class ConfigComponent {
+  userService = inject(UserService);
+  router = inject(Router);
+  snackBar = inject(MatSnackBar);
+
   form: FormGroup<FormData> | undefined;
-  initialValues: UserData | null = null;
+  initialValues: UserPublicData | null = null;
+  private picFile: File | null = null;
 
-  constructor(private sanitizer: DomSanitizer) {}
+  constructor() {
+    this.initForm(this.userService.userData as UserPublicData);
+  }
 
-  private initForm(data: UserData) {
+  private initForm(data: UserPublicData) {
     this.initialValues = { ...data };
     this.form = new FormGroup<FormData>({
       crpId: new FormControl<string>(data.crpId, {
@@ -66,10 +66,13 @@ export class ConfigComponent {
         validators: [Validators.required],
         nonNullable: true,
       }),
-      psycologicalSpecialty: new FormControl<string>(data.psycologicalSpecialty, {
-        validators: [Validators.required],
-        nonNullable: true,
-      }),
+      psycologicalSpecialty: new FormControl<string>(
+        data.psycologicalSpecialty,
+        {
+          validators: [Validators.required],
+          nonNullable: true,
+        }
+      ),
       phone: new FormControl<string>(data.phone, {
         validators: [Validators.required],
         nonNullable: true,
@@ -92,65 +95,76 @@ export class ConfigComponent {
       acceptedInsurances: new FormControl<string>(data.acceptedInsurances, {
         nonNullable: true,
       }),
-      picture: new FormControl<File | null>(data.picture, {
+      picture: new FormControl<string>(data.picture, {
         nonNullable: true,
       }),
     });
 
-    this.form.controls.serviceModality.valueChanges.subscribe((value) => {
+    this.form.controls.serviceModality.valueChanges.subscribe(value => {
       console.log(value);
     });
-  }
-
-  // Method for development purposes only
-  fillSampleData() {
-    this.initForm({
-      crpId: '1234567890',
-      name: 'Dr. João Silva',
-      address: 'Rua das Flores, 123',
-      psycologicalSpecialty: 'Psicologia Clínica',
-      phone: '(11) 99999-9999',
-      instagramAddress: 'https://www.instagram.com/dr_joaosilva',
-      targetAudience: 'Adultos e adolescentes',
-      serviceModality: ['Individual', 'Grupo'],
-      paymentMethod: ['Cartão de crédito', 'Convênios'],
-      acceptedInsurances: 'Unimed, Amil',
-      picture: null,
-    });
-  }
-  
-  getSafeUrl(file: File | null): SafeUrl {
-    if (!file) return '';
-    return this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file));
   }
 
   onFileSelected(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
-      this.form?.controls.picture.setValue(file);
+      this.picFile = file;
     }
   }
 
-  onSubmit() {
-    if (!this.form || !this.initialValues) return;
+  async onSubmit() {
+    if (!this.form || !this.initialValues || !this.userService.userData) return;
 
     const currentValues = this.form.getRawValue();
-    const changedFields: Partial<UserData> = {};
+    const changedFields: Partial<UserFormData> = {};
     const initialValues = this.initialValues;
 
-    Object.keys(currentValues).forEach((key) => {
-      const typedKey = key as keyof UserData;
-      if (JSON.stringify(currentValues[typedKey]) !== JSON.stringify(initialValues[typedKey])) {
+    Object.keys(currentValues).forEach(key => {
+      const typedKey = key as keyof UserFormData;
+      if (
+        JSON.stringify(currentValues[typedKey]) !==
+        JSON.stringify(initialValues[typedKey])
+      ) {
         changedFields[typedKey] = currentValues[typedKey] as any;
       }
     });
 
-    console.log('Campos alterados:', changedFields);
+    if ('picture' in changedFields && changedFields.picture) {
+      changedFields.picture = this.picFile || undefined;
+    }
+
+    await this.userService.updateUserData(
+      this.userService.userData['uid'],
+      changedFields
+    );
+    this.snackBar.open('Dados atualizados com sucesso!', 'Fechar', {
+      duration: 4000,
+    });
   }
 
-  shouldDisable(controlNames: (keyof UserData)[]): boolean {
+  async removeUser() {
+    const proceed = confirm('Tem certeza que deseja apagar seu cadastro?');
+    if (!proceed) return;
+
+    if (!this.userService.userData) return;
+    await this.userService.unregisterUser(this.userService.userData['uid']);
+    this.router.navigate(['/']);
+  }
+
+  resetPanel(controlNames: (keyof UserPublicData)[]) {
+    if (!this.form || !this.initialValues) return;
+
+    controlNames.forEach(controlName => {
+      const initialValue = this.initialValues?.[controlName];
+      if (initialValue !== undefined) {
+        this.form?.get(controlName)?.setValue(initialValue);
+      }
+    });
+  }
+
+  shouldDisable(controlNames: (keyof UserPublicData)[]): boolean {
     if (!this.form || !this.initialValues) return false;
-    
+
     const hasErrors = controlNames.some(controlName => {
       const control = this.form?.get(controlName);
       return control?.invalid || false;
@@ -163,16 +177,5 @@ export class ConfigComponent {
     });
 
     return !hasChanges || hasErrors;
-  }
-
-  resetPanel(controlNames: (keyof UserData)[]) {
-    if (!this.form || !this.initialValues) return;
-    
-    controlNames.forEach(controlName => {
-      const initialValue = this.initialValues?.[controlName];
-      if (initialValue !== undefined) {
-        this.form?.get(controlName)?.setValue(initialValue);
-      }
-    });
   }
 }

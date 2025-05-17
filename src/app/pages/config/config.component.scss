@@ -10,3 +10,7 @@
   color: var(--mat-sys-on-surface-variant);
   transform: scale(4);
 }
+
+.error-color {
+  --mat-sys-primary: var(--mat-sys-error);
+}

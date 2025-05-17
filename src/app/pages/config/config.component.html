@@ -226,12 +226,16 @@
       </mat-expansion-panel>
     </mat-accordion>
   </form>
+  <div class="flex flex-col gap-4 items-center pt-8">
+    <a mat-flat-button routerLink="/card">Visualizar cartão de visita</a>
+    <button mat-flat-button class="error-color" (click)="removeUser()">
+      <mat-icon>delete</mat-icon>
+      Apagar cadastro
+    </button>
+  </div>
 } @else {
   <div class="flex flex-col justify-center gap-6 items-center h-full">
     <mat-spinner></mat-spinner>
     <p class="mat-body-large">Carregando seus dados...</p>
-    <button mat-flat-button (click)="fillSampleData()">
-      Preencher com dados do usuário
-    </button>
   </div>
 }
