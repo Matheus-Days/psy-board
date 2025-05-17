@@ -16,7 +16,7 @@ import { MatCardModule } from '@angular/material/card';
 import { ProfessionalCardComponent } from '../../components/professional-card/professional-card.component';
 import { HttpClient } from '@angular/common/http';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { LoginResult, UserPublicData, UserService } from '../../services/auth.service';
+import { LoginResult, UserPublicData, UserService } from '../../services/user.service';
 import { SafeUrlPipe } from '../config/safe-url.pipe';
 
 @Component({

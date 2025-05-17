@@ -11,7 +11,7 @@
       <span class="flex-grow"></span>
       <h1>Psicoquadro</h1>
       <span class="flex-grow"></span>
-      <button mat-icon-button aria-label="account icon" routerLink="/login" [disabled]="!!user">
+      <button mat-icon-button aria-label="account icon" routerLink="/config">
         <mat-icon>account_circle</mat-icon>
       </button>
     </mat-toolbar>
@@ -36,7 +36,7 @@
           Criar conta
         </a>
       } @else {
-        <a mat-list-item (click)="userService.logoutWithGoogle()">
+        <a mat-list-item (click)="logout()">
           <mat-icon matListItemIcon>logout</mat-icon>
           Sair da conta
         </a>

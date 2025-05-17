@@ -13,7 +13,7 @@ import {
   UserService,
   UserPublicData,
   UserFormData,
-} from '../../services/auth.service';
+} from '../../services/user.service';
 import { Router, RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -98,10 +98,6 @@ export class ConfigComponent {
       picture: new FormControl<string>(data.picture, {
         nonNullable: true,
       }),
-    });
-
-    this.form.controls.serviceModality.valueChanges.subscribe(value => {
-      console.log(value);
     });
   }
 

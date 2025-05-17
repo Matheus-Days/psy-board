@@ -6,7 +6,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { CloudinaryModule } from '@cloudinary/ng';
-import { UserPublicData, UserService } from './services/auth.service';
+import { UserPublicData, UserService } from './services/user.service';
 
 @Component({
   selector: 'app-root',
@@ -31,6 +31,16 @@ export class AppComponent {
   userData = signal<UserPublicData | undefined>(undefined);
 
   constructor() {
+    this.userService.afAuth.onAuthStateChanged(user => {
+      if (user) {
+        this.userService.checkRegistered().then(userData => {
+          this.userData.set(userData);
+        });
+      } else {
+        this.userData.set(undefined);
+      }
+    });
+
     this.matIconRegistry.addSvgIconResolver(name => {
       return this.sanitizer.bypassSecurityTrustResourceUrl(
         `assets/icons/${name}.svg`
@@ -40,5 +50,10 @@ export class AppComponent {
 
   isRouteActive(route: string): boolean {
     return this.router.url === route;
+  }
+
+  async logout(): Promise<void> {
+    await this.userService.logoutWithGoogle();
+    this.router.navigate(['/']);
   }
 }

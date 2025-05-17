@@ -16,6 +16,7 @@ import {
   DocumentReference,
   Firestore,
   getDoc,
+  getDocs,
   setDoc,
 } from '@angular/fire/firestore';
 import { Storage } from '@angular/fire/storage';
@@ -116,6 +117,16 @@ export class UserService {
     return snapshotData as UserPublicData;
   }
 
+  async listUsers(): Promise<UserPublicData[]> {
+    try {
+      const response = await lastValueFrom(this.http.get<UserPublicData[]>('/api/users'));
+      return response;
+    } catch (error) {
+      console.error('Erro ao listar usuários:', error);
+      return [];
+    }
+  }
+
   async loginWithGoogle(): Promise<LoginResult> {
     this.afAuth.setPersistence(browserLocalPersistence);
     const provider = new GoogleAuthProvider();
@@ -187,6 +198,7 @@ export class UserService {
     }
 
     await updateDoc(userDocRef, data);
+    this.userData = await this.fetchUserPublicData(uid);
   }
 
   async uploadProfilePic(file: File): Promise<CloudinaryUploadResponse> {

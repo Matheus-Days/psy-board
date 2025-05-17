@@ -10,7 +10,7 @@ import {
   transition,
   animate,
 } from '@angular/animations';
-import { UserPublicData } from '../../services/auth.service';
+import { UserPublicData } from '../../services/user.service';
 import { SafeUrlPipe } from '../../pages/config/safe-url.pipe';
 @Component({
   selector: 'app-professional-card',

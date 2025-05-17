@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ProfessionalCardComponent } from '../../components/professional-card/professional-card.component';
-import { UserPublicData, UserService } from '../../services/auth.service';
+import { UserPublicData, UserService } from '../../services/user.service';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 @Component({

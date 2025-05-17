@@ -10,14 +10,42 @@ import { fileURLToPath } from 'node:url';
 import { v2 as cloudinary } from 'cloudinary';
 import multer from 'multer';
 
+let admin: typeof import('firebase-admin');
+let db: FirebaseFirestore.Firestore | undefined;
+try {
+  admin = require('firebase-admin');
+
+  const creds = process.env['FIREBASE_ADMIN'];
+
+  if (creds) {
+    try {
+      // Verifica se já existe uma instância do Firebase inicializada
+      if (!admin.apps.length) {
+        const credential = admin.credential.cert(JSON.parse(creds));
+        admin.initializeApp({
+          credential,
+          projectId: JSON.parse(creds).project_id,
+          databaseURL: `https://${JSON.parse(creds).project_id}.firebaseio.com`,
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao inicializar Firebase Admin:', error);
+    }
+  }
+
+  db = admin.firestore();
+} catch {
+  console.error('Não foi possível carregar firebase-admin no cliente');
+}
+
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
 
 // Inicialize Cloudinary
-cloudinary.config({ 
-  cloud_name: process.env['CLOUD_NAME']!, 
-  api_key: process.env['CLOUD_API_KEY']!, 
-  api_secret: process.env['CLOUD_API_SECRET']! 
+cloudinary.config({
+  cloud_name: process.env['CLOUD_NAME']!,
+  api_key: process.env['CLOUD_API_KEY']!,
+  api_secret: process.env['CLOUD_API_SECRET']!,
 });
 
 const app = express();
@@ -45,7 +73,7 @@ app.post('/api/upload', upload.single('file') as any, async (req, res) => {
       return new Promise<any>((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
           { resource_type: 'auto' },
-          (error, result) => error ? reject(error) : resolve(result)
+          (error, result) => (error ? reject(error) : resolve(result))
         );
         stream.end(buf);
       });
@@ -57,6 +85,23 @@ app.post('/api/upload', upload.single('file') as any, async (req, res) => {
   }
 });
 
+app.get('/api/users', async (_, res) => {
+  try {
+    if (!db) {
+      throw new Error('Firebase Admin não foi inicializado corretamente');
+    }
+    const snapshot = await db.collection('users').get();
+    const users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    res.json(users);
+  } catch (error) {
+    console.error('Erro ao buscar usuários:', error);
+    res.status(500).json({
+      error: 'Erro interno do servidor',
+      details: error instanceof Error ? error.message : 'Erro desconhecido',
+    });
+  }
+});
+
 /**
  * Serve static files from /browser
  */
@@ -65,7 +110,7 @@ app.use(
     maxAge: '1y',
     index: false,
     redirect: false,
-  }),
+  })
 );
 
 /**
@@ -74,8 +119,8 @@ app.use(
 app.use('/**', (req, res, next) => {
   angularApp
     .handle(req)
-    .then((response) =>
-      response ? writeResponseToNodeResponse(response, res) : next(),
+    .then(response =>
+      response ? writeResponseToNodeResponse(response, res) : next()
     )
     .catch(next);
 });

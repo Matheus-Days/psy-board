@@ -1,11 +1,11 @@
-import { Component, signal, viewChild } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { SearchBarModule } from '../../components/search-bar/search-bar.module';
-import { SearchBarComponent } from '../../components/search-bar/search-bar.component';
 import { ProfessionalCardComponent } from '../../components/professional-card/professional-card.component';
+import { UserPublicData, UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-home',
@@ -17,27 +17,19 @@ import { ProfessionalCardComponent } from '../../components/professional-card/pr
     MatIconModule,
     MatToolbarModule,
     ProfessionalCardComponent,
-    SearchBarModule,
   ],
 })
-export class HomeComponent {
-  searchResults = signal<string[]>([]);
+export class HomeComponent implements OnInit {
+  userService = inject(UserService);
 
-  onFocused(): void {
-    console.log('focused');
-    this.searchResults.set(['Psi 1', 'Psi 2', 'Psi 3']);
-  }
+  private _results = signal<UserPublicData[]>([]);
+  searchResults = computed(() =>
+    this._results().filter(user => user.name !== 'Example')
+  );
 
-  onBlurred(): void {
-    console.log('blurred');
-    this.searchResults.set([]);
-  }
-
-  onValueChanged(value: string): void {
-    console.log(value);
-  }
-
-  onItemClicked(item: string): void {
-    console.log(item);
+  ngOnInit(): void {
+    this.userService.listUsers().then(users => {
+      this._results.set(users);
+    });
   }
 }
