@@ -1,0 +1,21 @@
+[build]
+  command   = "npm run build:ssr"
+  publish   = "dist/psy-board/browser"
+  functions = "netlify/functions"
+
+[functions]
+  external_node_modules = [
+    "express",
+    "@angular/ssr/node",
+    "multer",
+    "cloudinary",
+    "firebase-admin",
+    "serverless-http"
+  ]
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from   = "/*"
+  to     = "/.netlify/functions/ssr"
+  status = 200
+  force  = true
