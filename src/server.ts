@@ -9,12 +9,15 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { v2 as cloudinary } from 'cloudinary';
 import multer from 'multer';
+import { createRequire } from 'module';
+import { firestore} from 'firebase-admin'
 
-let admin: typeof import('firebase-admin');
-let db: FirebaseFirestore.Firestore | undefined;
+const require = createRequire(import.meta.url);
+const admin = require('firebase-admin');
+
+let db: firestore.Firestore | undefined;
+
 try {
-  admin = require('firebase-admin');
-
   const creds = process.env['FIREBASE_ADMIN'];
 
   if (creds) {
@@ -34,8 +37,8 @@ try {
   }
 
   db = admin.firestore();
-} catch {
-  console.error('Não foi possível carregar firebase-admin no cliente');
+} catch (error) {
+  console.error('Não foi possível carregar firebase-admin:', error);
 }
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
